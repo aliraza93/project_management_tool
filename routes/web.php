@@ -5,6 +5,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -24,6 +25,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::get('test', function () {
+    $toEmail = 'itsaliofficial6@gmail.com'; // Change this to the recipient's email address
+    $subject = 'Test Email';
+    $content = 'This is a test email sent using Laravel and Google SMTP server.';
+
+    Mail::raw($content, function ($message) use ($toEmail, $subject) {
+        $message->to($toEmail)
+        ->subject($subject);
+    });
 });
 
 require __DIR__.'/auth.php';

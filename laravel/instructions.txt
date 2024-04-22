@@ -1,0 +1,41 @@
+After clone Git repo:
+
+
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan migrate:fresh --seed
+
+php artisan migrate:refresh --path=/database/migrations/2023_03_29_100000_create_users_table.php
+
+php artisan db:seed --class=ReportReasonsTableSeeder
+
+php artisan make:migration create_cities_table
+
+php artisan make:migration create_religion_denominations_table
+
+php artisan make:controller API/FindLocationController --api
+
+php artisan make:controller API/FindUserController --api
+
+php artisan make:controller Admin/SettingController
+
+php artisan make:controller Admin/EmailTemplateController --model=EmailTemplate --resource
+
+php artisan make:factory CountryFactory --model=Country
+
+php artisan make:seeder CountryTableSeeder
+
+
+Site Settings Steps:
+1. Make controller php artisan make:controller Admin/SettingController
+2. Make Traits uploadable in app=>traits=>uploadable
+3. Create Views File in Resource=> views => admin =>Settings
+4. Make setting Modeal
+5. Create Service Provider for Settings app=> Provider =>SettingsServiceProvider
+6. Register SettingsServiceProvider in config/app file
+7. Add entry in DBSeeder for Settings
+8. Create Seed for Setting table
+9. Migration for setting Table

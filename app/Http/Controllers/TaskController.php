@@ -16,7 +16,6 @@ use Illuminate\Support\Str;
 
 class TaskController extends Controller
 {
-    protected $fillable = ['image_path', 'name', 'description', 'status', 'priority', 'due_date', 'created_by', 'updated_by', 'assigned_user_id', 'project_id'];
     /**
      * Display a listing of the resource.
      */
@@ -77,23 +76,8 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        $query = $task->tasks();
-        $sortField = request('sort_field', 'created_at');
-        $sortDirection = request('sort_direction', 'desc');
-
-        if (request('name')) {
-            $query->where('name', 'like', '%' . request('name') . '%');
-        }
-
-        if (request('status')) {
-            $query->where('status', request()->status);
-        }
-
-        $tasks = $query->orderBy($sortField, $sortDirection)->paginate(10)->onEachSide(1);
         return Inertia('Task/Show', [
             'task' => new TaskResource($task),
-            'tasks' => TaskResource::collection($tasks),
-            'queryParams' => request()->query() ?: null,
         ]);
     }
 
@@ -140,5 +124,28 @@ class TaskController extends Controller
         $task->delete();
         
         return to_route('task.index')->with('success', "Task \"$name\" deleted successfully!");
+    }
+
+    public function myTasks() 
+    {
+        $query = Task::query()->where('assigned_user_id', auth()->id());
+
+        $sortField = request('sort_field', 'created_at');
+        $sortDirection = request('sort_direction', 'desc');
+
+        if (request('name')) {
+            $query->where('name', 'like', '%' . request('name') . '%');
+        }
+
+        if (request('status')) {
+            $query->where('status', request()->status);
+        }
+
+        $tasks = $query->orderBy($sortField, $sortDirection)->paginate(10)->onEachSide(1);
+        return Inertia::render('Task/Index', [
+            'tasks' => TaskResource::collection($tasks),
+            'queryParams' => request()->query() ?: null,
+            'success' => session('success')
+        ]);
     }
 }
